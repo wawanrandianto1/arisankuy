@@ -8,11 +8,19 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      total: {
+        defaultValue: 0,
+        type: Sequelize.INTEGER,
+      },
       nominal: {
         defaultValue: 0,
         type: Sequelize.INTEGER,
       },
       lamaHari: {
+        defaultValue: 0,
+        type: Sequelize.INTEGER,
+      },
+      urutan: {
         defaultValue: 0,
         type: Sequelize.INTEGER,
       },
@@ -27,12 +35,18 @@ module.exports = {
       tanggalMulai: {
         type: Sequelize.DATE,
       },
+      tanggalGet: {
+        type: Sequelize.DATE,
+      },
       status: {
         defaultValue: 'pending', // pending, mulai, berakhir
         type: Sequelize.STRING(20),
       },
       catatan: {
         type: Sequelize.TEXT,
+      },
+      username: {
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,

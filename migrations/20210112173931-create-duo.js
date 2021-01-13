@@ -16,6 +16,10 @@ module.exports = {
         defaultValue: 0,
         type: Sequelize.INTEGER,
       },
+      total: {
+        defaultValue: 0,
+        type: Sequelize.INTEGER,
+      },
       biayaAdmin: {
         defaultValue: 0,
         type: Sequelize.INTEGER,
@@ -36,6 +40,9 @@ module.exports = {
       },
       catatan: {
         type: Sequelize.TEXT,
+      },
+      username: {
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,

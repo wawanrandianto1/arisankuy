@@ -7,11 +7,11 @@ module.exports = {
     database: process.env.DB_DATABASE,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: 'mysql',
-    dialectOptions: {
-      timezone: '+07:00',
-      decimalNumbers: true,
-    },
+    dialect: 'postgres',
+    // dialectOptions: {
+    //   timezone: '+07:00',
+    //   decimalNumbers: true,
+    // },
     connectionTimeout: 0,
   },
   production: {
@@ -20,11 +20,11 @@ module.exports = {
     database: process.env.DB_DATABASE,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: 'mysql',
-    dialectOptions: {
-      timezone: '+07:00',
-      decimalNumbers: true,
-    },
+    dialect: 'postgres',
+    // dialectOptions: {
+    //   timezone: '+07:00',
+    //   decimalNumbers: true,
+    // },
     connectionTimeout: 0,
   },
 };

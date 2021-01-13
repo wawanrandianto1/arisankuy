@@ -9,14 +9,23 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+
+      this.belongsTo(models.Menurun, {
+        foreignKey: 'menurunId',
+        targetKey: 'id',
+        as: 'menurun',
+      });
     }
   }
   MenurunItem.init(
     {
       menurunId: DataTypes.INTEGER,
+      urutan: DataTypes.INTEGER,
       tanggal: DataTypes.DATE,
+      getArisan: DataTypes.BOOLEAN,
       hargaBayar: DataTypes.INTEGER,
       status: DataTypes.STRING(20),
+      username: DataTypes.STRING,
     },
     {
       sequelize,

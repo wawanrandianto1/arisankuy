@@ -6,6 +6,7 @@ require('dotenv').config();
 const app = express();
 const path = require('path');
 const bodyParser = require('body-parser');
+const expressValidator = require('express-validator');
 const cors = require('cors');
 const logger = require('morgan');
 const passport = require('passport');
@@ -29,6 +30,7 @@ app.use(
     parameterLimit: 50000,
   })
 );
+app.use(expressValidator());
 
 // set static folder
 app.use('/public', express.static(path.join(__dirname, 'public')));
@@ -38,6 +40,15 @@ app.use(passport.session());
 
 app.use('/api', routeApi);
 
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public/main.html')));
-app.get('/*', (req, res) => res.sendFile(path.join(__dirname, 'public/404.html')));
-app.listen(port, () => console.log(`Vontis Backend listening on port ${port}!`));
+app.get('/', (req, res) =>
+  res.sendFile(path.join(__dirname, 'public/main.html'))
+);
+app.get('/*', (req, res) =>
+  res.sendFile(path.join(__dirname, 'public/404.html'))
+);
+
+// CRONJOB
+// require('./cron/ExpiredMenurunItem');
+// require('./cron/NotifikasiMenurun');
+
+app.listen(port, () => console.log(`Backend listening on port ${port}!`));

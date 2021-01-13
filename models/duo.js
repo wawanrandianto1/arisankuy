@@ -15,12 +15,14 @@ module.exports = (sequelize, DataTypes) => {
     {
       nominalPertama: DataTypes.INTEGER,
       nominalKedua: DataTypes.INTEGER,
+      total: DataTypes.INTEGER,
       biayaAdmin: DataTypes.INTEGER,
       lamaHari: DataTypes.INTEGER,
       tanggalMulai: DataTypes.DATE,
       status: DataTypes.STRING(20), // pending, mulai, diundur, berakhir
       namaPasangan: DataTypes.STRING,
       catatan: DataTypes.TEXT,
+      username: DataTypes.STRING,
     },
     {
       sequelize,

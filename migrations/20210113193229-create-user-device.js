@@ -1,36 +1,23 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('MenurunItems', {
+    await queryInterface.createTable('UserDevices', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      menurunId: {
+      userId: {
         allowNull: false,
         type: Sequelize.INTEGER,
       },
-      urutan: {
-        type: Sequelize.INTEGER,
+      deviceOs: {
+        type: Sequelize.STRING, // ios dan android
       },
-      tanggal: {
-        type: Sequelize.DATE,
-      },
-      getArisan: {
-        type: Sequelize.BOOLEAN,
-      },
-      hargaBayar: {
-        defaultValue: 0,
-        type: Sequelize.INTEGER,
-      },
-      status: {
-        defaultValue: 'pending',
-        type: Sequelize.STRING(20),
-      },
-      username: {
-        type: Sequelize.STRING,
+      deviceToken: {
+        allowNull: false,
+        type: Sequelize.TEXT,
       },
       createdAt: {
         allowNull: false,
@@ -43,6 +30,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('MenurunItems');
+    await queryInterface.dropTable('UserDevices');
   },
 };
