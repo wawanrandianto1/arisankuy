@@ -8,10 +8,14 @@ module.exports = {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     dialect: 'postgres',
-    // dialectOptions: {
-    //   timezone: '+07:00',
-    //   decimalNumbers: true,
-    // },
+    dialectOptions: {
+      // timezone: '+07:00',
+      // decimalNumbers: true,
+      ssl: {
+        require: true,
+        rejectUnauthorized: false, // <<<<<<< YOU NEED THIS
+      },
+    },
     connectionTimeout: 0,
   },
   production: {
@@ -21,10 +25,14 @@ module.exports = {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     dialect: 'postgres',
-    // dialectOptions: {
-    //   timezone: '+07:00',
-    //   decimalNumbers: true,
-    // },
+    dialectOptions: {
+      //   timezone: '+07:00',
+      //   decimalNumbers: true,
+      ssl: {
+        require: true,
+        rejectUnauthorized: false, // <<<<<<< YOU NEED THIS
+      },
+    },
     connectionTimeout: 0,
   },
 };
