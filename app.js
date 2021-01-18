@@ -48,7 +48,7 @@ app.get('/*', (req, res) =>
 );
 
 // CRONJOB
-// require('./cron/ExpiredMenurunItem');
-// require('./cron/NotifikasiMenurun');
+require('./cron/ExpiredMenurunItem');
+require('./cron/NotifikasiMenurun');
 
 app.listen(port, () => console.log(`Backend listening on port ${port}!`));
