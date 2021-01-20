@@ -3,6 +3,7 @@ const passport = require('passport');
 
 const router = express.Router();
 const indexController = require('../controller/index');
+const { uploadFotoMenurun } = require('../config/multerConfig');
 
 router.post('/register', indexController.auth.register);
 router.post('/login', indexController.auth.login);
@@ -63,10 +64,17 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   indexController.menurun.detailMenurun
 );
+
 router.get(
   '/menurunitem/list',
   passport.authenticate('jwt', { session: false }),
   indexController.menurunItem.getStartList
+);
+router.post(
+  '/menurunitem/bayar/:id',
+  uploadFotoMenurun,
+  passport.authenticate('jwt', { session: false }),
+  indexController.menurunItem.bayarItem
 );
 
 module.exports = router;

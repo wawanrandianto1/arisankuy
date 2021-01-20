@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       tanggal: DataTypes.DATE,
       getArisan: DataTypes.BOOLEAN,
       hargaBayar: DataTypes.INTEGER,
+      image: DataTypes.TEXT,
       status: DataTypes.STRING(20),
       username: DataTypes.STRING,
     },

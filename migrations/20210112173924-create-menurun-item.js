@@ -25,6 +25,9 @@ module.exports = {
         defaultValue: 0,
         type: Sequelize.INTEGER,
       },
+      image: {
+        type: Sequelize.TEXT,
+      },
       status: {
         defaultValue: 'pending',
         type: Sequelize.STRING(20),

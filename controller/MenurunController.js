@@ -152,6 +152,7 @@ module.exports.listMenurun = (req, res) => {
   }
 
   let { status } = req.query;
+  const { startDate, endDate } = req.query;
   const where = {};
   if (status) {
     if (['pending', 'start', 'end'].indexOf(status) < 0) {
@@ -159,6 +160,26 @@ module.exports.listMenurun = (req, res) => {
     }
     Object.assign(where, {
       status,
+    });
+  }
+
+  if (startDate && endDate) {
+    if (
+      moment(startDate, 'DD-MM-YYYY', true).isValid() === false ||
+      moment(endDate, 'DD-MM-YYYY', true).isValid() === false
+    ) {
+      return res
+        .status(422)
+        .json({ status: false, message: 'Not a valid date' });
+    }
+
+    Object.assign(where, {
+      tanggalMulai: {
+        [Op.between]: [
+          moment(startDate, 'DD-MM-YYYY').startOf('day').toDate(),
+          moment(endDate, 'DD-MM-YYYY').endOf('day').toDate(),
+        ],
+      },
     });
   }
 
