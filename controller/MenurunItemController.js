@@ -3,30 +3,6 @@ const { Menurun, MenurunItem, sequelize } = require('../models');
 const Paginator = require('../helper/paginator');
 
 module.exports.getStartList = async (req, res) => {
-  const allMenurunItem = await MenurunItem.findAll({
-    include: [
-      {
-        model: Menurun,
-        as: 'menurun',
-        attributes: { exclude: ['updatedAt', 'username', 'catatan'] },
-      },
-    ],
-    attributes: { exclude: ['createdAt', 'updatedAt'] },
-    where: { status: 'start' },
-  });
-
-  const { tanggal } = allMenurunItem[0];
-  const formatMoment = moment(tanggal);
-  const hasil = formatMoment.diff(moment(), 'days') + 1;
-
-  return res.status(200).json({
-    status: true,
-    today: moment(),
-    formatMoment,
-    hasil,
-    hasil2: hasil <= 5 && hasil >= 0 ? true : false,
-  });
-
   let { page, limit, sort = 'asc', by = 'createdAt' } = req.query;
   page = Number(page || 1);
   limit = Number(limit || 25);
