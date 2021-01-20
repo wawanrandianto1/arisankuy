@@ -1,6 +1,6 @@
 const cron = require('node-cron');
 const moment = require('moment');
-const { MenurunItem } = require('../models');
+const { MenurunItem, Menurun } = require('../models');
 const { sendNotifMobile } = require('../helper/general');
 
 cron.schedule('*/5 * * * * *', async () => {
