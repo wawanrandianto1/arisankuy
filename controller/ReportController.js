@@ -13,7 +13,7 @@ module.exports.dashboard = async (req, res) => {
   const duos = await Duo.findAll({
     where: { username },
   });
-  if (duos) {
+  if (duos.length) {
     totalDuos = duos.length;
     totalHargaDuos = duos.reduce((a, b) => a.nominalKedua + b.nominalKedua);
     totalLabaDuos = duos.reduce((a, b) => a.laba + b.laba);
@@ -22,7 +22,7 @@ module.exports.dashboard = async (req, res) => {
   const menuruns = await Menurun.findAll({
     where: { username },
   });
-  if (menuruns) {
+  if (menuruns.length) {
     totalMenurun = menuruns.length;
     totalHargaMenurun = menuruns.reduce((a, b) => a.total + b.total);
   }
