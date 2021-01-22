@@ -100,6 +100,48 @@ module.exports.login = async (req, res) => {
     });
 };
 
+module.exports.changePassword = async (req, res) => {
+  req.checkBody('password', 'Password required.').notEmpty();
+  req.checkBody('confirmpassword', 'Confirmation required.').notEmpty();
+  const errors = req.validationErrors();
+  if (errors) {
+    return res.status(422).json({ status: false, message: errors[0].msg });
+  }
+
+  const { password, confirmpassword } = req.body;
+  if (password !== confirmpassword) {
+    return res.status(422).json({
+      status: false,
+      message: 'Konfirmasi salah.',
+    });
+  }
+
+  const newpassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
+  const { id } = req.user;
+  const user = await User.findByPk(id);
+  if (!user) {
+    return res.status(422).json({
+      status: false,
+      message: 'User tidak ditemukan.',
+    });
+  }
+
+  return user
+    .update({
+      password: newpassword,
+    })
+    .then(() => {
+      return res.status(200).json({
+        status: true,
+        message: 'Sukses ubah password.',
+      });
+    })
+    .catch((err) => {
+      // console.log(err.message);
+      return res.status(422).json({ status: false, message: err.message });
+    });
+};
+
 module.exports.getUserData = (req, res) => {
   const { id } = req.user;
   return User.findOne({

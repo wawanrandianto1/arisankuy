@@ -21,6 +21,12 @@ router.post(
 );
 
 router.post(
+  '/change/password',
+  passport.authenticate('jwt', { session: false }),
+  indexController.auth.changePassword
+);
+
+router.post(
   '/userdevice/delete',
   passport.authenticate('jwt', { session: false }),
   indexController.auth.removeUserDevice
