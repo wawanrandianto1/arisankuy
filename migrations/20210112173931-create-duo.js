@@ -20,6 +20,10 @@ module.exports = {
         defaultValue: 0,
         type: Sequelize.INTEGER,
       },
+      laba: {
+        defaultValue: 0,
+        type: Sequelize.INTEGER,
+      },
       biayaAdmin: {
         defaultValue: 0,
         type: Sequelize.INTEGER,

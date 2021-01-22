@@ -13,8 +13,8 @@ module.exports.createDuo = (req, res) => {
   }
 
   const {
-    nominalPertama,
-    nominalKedua,
+    nominalPertama, // nominal lawan
+    nominalKedua, // nominal kita
     biayaAdmin,
     lamaHari,
     namaPasangan,
@@ -22,10 +22,19 @@ module.exports.createDuo = (req, res) => {
   } = req.body;
   const { username } = req.user;
 
+  const selisih = parseInt(nominalPertama, 10) - parseInt(nominalKedua, 10);
+  let laba = 0;
+  if (selisih < 0) {
+    laba = selisih;
+  } else {
+    laba = selisih - parseInt(biayaAdmin, 10);
+  }
+
   return Duo.create({
     nominalPertama: parseInt(nominalPertama, 10),
     nominalKedua: parseInt(nominalKedua, 10),
     total: parseInt(nominalPertama, 10) + parseInt(nominalKedua, 10),
+    laba,
     biayaAdmin: parseInt(biayaAdmin, 10),
     lamaHari: parseInt(lamaHari, 10),
     namaPasangan,

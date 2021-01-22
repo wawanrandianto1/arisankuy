@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       nominalPertama: DataTypes.INTEGER,
       nominalKedua: DataTypes.INTEGER,
       total: DataTypes.INTEGER,
+      laba: DataTypes.INTEGER,
       biayaAdmin: DataTypes.INTEGER,
       lamaHari: DataTypes.INTEGER,
       tanggalMulai: DataTypes.DATE,

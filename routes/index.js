@@ -9,6 +9,12 @@ router.post('/register', indexController.auth.register);
 router.post('/login', indexController.auth.login);
 
 router.get(
+  '/dashboard',
+  passport.authenticate('jwt', { session: false }),
+  indexController.report.dashboard
+);
+
+router.get(
   '/userdata',
   passport.authenticate('jwt', { session: false }),
   indexController.auth.getUserData

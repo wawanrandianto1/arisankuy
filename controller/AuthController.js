@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { User, UserDevice } = require('../models');
+const { User, UserDevice, Duo, Menurun, MenurunItem } = require('../models');
 const { validEmail } = require('../helper/general');
 
 const secretKey = process.env.SECRET_KEY;
