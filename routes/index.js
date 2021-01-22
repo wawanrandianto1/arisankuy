@@ -9,6 +9,24 @@ router.post('/register', indexController.auth.register);
 router.post('/login', indexController.auth.login);
 
 router.get(
+  '/userdata',
+  passport.authenticate('jwt', { session: false }),
+  indexController.auth.getUserData
+);
+
+router.post(
+  '/userdevice/save',
+  passport.authenticate('jwt', { session: false }),
+  indexController.auth.saveUserDevice
+);
+
+router.post(
+  '/userdevice/delete',
+  passport.authenticate('jwt', { session: false }),
+  indexController.auth.removeUserDevice
+);
+
+router.get(
   '/duo/list',
   passport.authenticate('jwt', { session: false }),
   indexController.duo.listDuo

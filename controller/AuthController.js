@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { User } = require('../models');
+const { User, UserDevice } = require('../models');
 const { validEmail } = require('../helper/general');
 
 const secretKey = process.env.SECRET_KEY;
@@ -97,5 +97,88 @@ module.exports.login = async (req, res) => {
         status: false,
         message: `Login gagal, server error. [${err.message}]`,
       });
+    });
+};
+
+module.exports.getUserData = (req, res) => {
+  const { id } = req.user;
+  return User.findOne({
+    attributes: { exclude: ['updatedAt', 'password'] },
+    where: { id },
+  })
+    .then((data) => {
+      if (!data) {
+        return res.status(422).json({
+          status: false,
+          message: 'User not found',
+        });
+      }
+
+      return res.status(200).json({
+        status: true,
+        data,
+      });
+    })
+    .catch((err) => {
+      // console.log(err.message);
+      return res.status(422).json({ status: false, message: err.message });
+    });
+};
+
+module.exports.saveUserDevice = async (req, res) => {
+  req.checkBody('deviceToken', 'Device required.').notEmpty();
+  req.checkBody('deviceOs', 'Os required.').notEmpty();
+  const errors = req.validationErrors();
+  if (errors) {
+    return res.status(422).json({ status: false, message: errors[0].msg });
+  }
+
+  const { deviceToken, deviceOs } = req.body;
+  const { id: userId } = req.user;
+
+  return UserDevice.create({
+    userId,
+    deviceToken,
+    deviceOs,
+  })
+    .then(() => {
+      return res.status(200).json({
+        status: true,
+        message: 'Saved user device',
+      });
+    })
+    .catch((err) => {
+      // console.log(err.message);
+      return res.status(422).json({ status: false, message: err.message });
+    });
+};
+
+module.exports.removeUserDevice = async (req, res) => {
+  req.checkBody('deviceToken', 'Device required.').notEmpty();
+  req.checkBody('deviceOs', 'Os required.').notEmpty();
+  const errors = req.validationErrors();
+  if (errors) {
+    return res.status(422).json({ status: false, message: errors[0].msg });
+  }
+
+  const { deviceToken, deviceOs } = req.body;
+  const { id: userId } = req.user;
+
+  return UserDevice.destroy({
+    where: {
+      userId,
+      deviceOs,
+      deviceToken,
+    },
+  })
+    .then(() => {
+      return res.status(200).json({
+        status: true,
+        message: 'Deleted user device',
+      });
+    })
+    .catch((err) => {
+      // console.log(err.message);
+      return res.status(422).json({ status: false, message: err.message });
     });
 };
