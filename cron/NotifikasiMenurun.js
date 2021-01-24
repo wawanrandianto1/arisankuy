@@ -3,7 +3,8 @@ const moment = require('moment');
 const { MenurunItem, Menurun } = require('../models');
 const { sendNotifMobile } = require('../helper/general');
 
-cron.schedule('*/5 * * * * *', async () => {
+// cron.schedule('*/5 * * * * *', async () => {
+cron.schedule('0 6 * * *', async () => {
   const allMenurunItem = await MenurunItem.findAll({
     include: [
       {

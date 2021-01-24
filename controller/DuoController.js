@@ -74,12 +74,20 @@ module.exports.startDuo = async (req, res) => {
   }
 
   return duo
-    .update({
-      status: 'start',
-      tanggalMulai: moment(tanggalMulai, 'DD-MM-YYYY').toDate(),
-    })
+    .update(
+      {
+        status: 'start',
+        tanggalMulai: moment(tanggalMulai, 'DD-MM-YYYY').toDate(),
+      },
+      {
+        returning: true,
+        plain: true,
+      }
+    )
     .then(() =>
-      res.status(200).json({ status: true, message: 'Duos berjalan.' })
+      res
+        .status(200)
+        .json({ status: true, message: 'Duos berjalan.', data: duo })
     )
     .catch((err) =>
       res.status(422).json({ status: false, message: err.message })
@@ -89,7 +97,7 @@ module.exports.startDuo = async (req, res) => {
 module.exports.listDuo = (req, res) => {
   let { page, limit, sort = 'asc', by = 'tanggalMulai' } = req.query;
   page = Number(page || 1);
-  limit = Number(limit || 25);
+  limit = Number(limit || 100);
   const paginator = new Paginator(page, limit);
   const offset = paginator.getOffset();
 

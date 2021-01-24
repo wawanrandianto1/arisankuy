@@ -140,7 +140,7 @@ module.exports.startMenurun = async (req, res) => {
 module.exports.listMenurun = (req, res) => {
   let { page, limit, sort = 'asc', by = 'tanggalMulai' } = req.query;
   page = Number(page || 1);
-  limit = Number(limit || 25);
+  limit = Number(limit || 100);
   const paginator = new Paginator(page, limit);
   const offset = paginator.getOffset();
 
