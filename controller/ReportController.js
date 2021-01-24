@@ -15,8 +15,10 @@ module.exports.dashboard = async (req, res) => {
   });
   if (duos.length) {
     totalDuos = duos.length;
-    totalHargaDuos = duos.reduce((a, b) => a.nominalKedua + b.nominalKedua);
-    totalLabaDuos = duos.reduce((a, b) => a.laba + b.laba);
+    duos.forEach((el) => {
+      totalHargaDuos += el.nominalKedua;
+      totalLabaDuos += el.laba;
+    });
   }
 
   const menuruns = await Menurun.findAll({
@@ -24,7 +26,9 @@ module.exports.dashboard = async (req, res) => {
   });
   if (menuruns.length) {
     totalMenurun = menuruns.length;
-    totalHargaMenurun = menuruns.reduce((a, b) => a.total + b.total);
+    menuruns.forEach((el) => {
+      totalHargaMenurun += el.total;
+    });
   }
 
   return res.status(200).json({
