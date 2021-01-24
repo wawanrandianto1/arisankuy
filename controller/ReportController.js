@@ -3,26 +3,41 @@ const { User, UserDevice, Duo, Menurun, MenurunItem } = require('../models');
 module.exports.dashboard = async (req, res) => {
   const { username } = req.user;
 
-  let totalDuos = 0;
-  let totalHargaDuos = 0;
-  let totalLabaDuos = 0;
+  let totalDuosStart = 0;
+  let totalHargaDuosStart = 0;
+  let totalLabaDuosStart = 0;
+
+  let totalDuosEnd = 0;
+  let totalHargaDuosEnd = 0;
+  let totalLabaDuosEnd = 0;
 
   let totalMenurun = 0;
   let totalHargaMenurun = 0;
 
-  const duos = await Duo.findAll({
-    where: { username },
+  const duosStart = await Duo.findAll({
+    where: { username, status: 'start' },
   });
-  if (duos.length) {
-    totalDuos = duos.length;
-    duos.forEach((el) => {
-      totalHargaDuos += el.nominalKedua;
-      totalLabaDuos += el.laba;
+  if (duosStart.length) {
+    totalDuosStart = duosStart.length;
+    duosStart.forEach((el) => {
+      totalHargaDuosStart += el.nominalKedua;
+      totalLabaDuosStart += el.laba;
+    });
+  }
+
+  const duosEnd = await Duo.findAll({
+    where: { username, status: 'end' },
+  });
+  if (duosEnd.length) {
+    totalDuosEnd = duosEnd.length;
+    duosEnd.forEach((el) => {
+      totalHargaDuosEnd += el.nominalKedua;
+      totalLabaDuosEnd += el.laba;
     });
   }
 
   const menuruns = await Menurun.findAll({
-    where: { username },
+    where: { username, status: 'start' },
   });
   if (menuruns.length) {
     totalMenurun = menuruns.length;
@@ -33,9 +48,12 @@ module.exports.dashboard = async (req, res) => {
 
   return res.status(200).json({
     status: true,
-    totalDuos,
-    totalHargaDuos,
-    totalLabaDuos,
+    totalDuosStart,
+    totalHargaDuosStart,
+    totalLabaDuosStart,
+    totalDuosEnd,
+    totalHargaDuosEnd,
+    totalLabaDuosEnd,
     totalMenurun,
     totalHargaMenurun,
   });
