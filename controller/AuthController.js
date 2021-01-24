@@ -6,10 +6,10 @@ const { validEmail } = require('../helper/general');
 const secretKey = process.env.SECRET_KEY;
 
 module.exports.register = async (req, res) => {
-  req.checkBody('email', 'Email required.').notEmpty();
-  req.checkBody('password', 'Password required.').notEmpty();
-  req.checkBody('nama', 'Nama required.').notEmpty();
-  req.checkBody('username', 'Username required.').notEmpty();
+  req.checkBody('email', 'Email harus diisi.').notEmpty();
+  req.checkBody('password', 'Password harus diisi.').notEmpty();
+  req.checkBody('nama', 'Nama harus diisi.').notEmpty();
+  req.checkBody('username', 'Username harus diisi.').notEmpty();
   const errors = req.validationErrors();
   if (errors) {
     return res.status(422).json({ status: false, message: errors[0].msg });
@@ -40,8 +40,8 @@ module.exports.register = async (req, res) => {
 };
 
 module.exports.login = async (req, res) => {
-  req.checkBody('password', 'Password required.').notEmpty();
-  req.checkBody('username', 'Username required.').notEmpty();
+  req.checkBody('password', 'Password harus diisi.').notEmpty();
+  req.checkBody('username', 'Username / Email harus diisi.').notEmpty();
   const errors = req.validationErrors();
   if (errors) {
     return res.status(422).json({ status: false, message: errors[0].msg });
@@ -196,8 +196,8 @@ module.exports.saveUserDevice = async (req, res) => {
 };
 
 module.exports.removeUserDevice = async (req, res) => {
-  req.checkBody('deviceToken', 'Device required.').notEmpty();
-  req.checkBody('deviceOs', 'Os required.').notEmpty();
+  req.checkBody('deviceToken', 'Device harus diisi.').notEmpty();
+  req.checkBody('deviceOs', 'Os harus diisi.').notEmpty();
   const errors = req.validationErrors();
   if (errors) {
     return res.status(422).json({ status: false, message: errors[0].msg });

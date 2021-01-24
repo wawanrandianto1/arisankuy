@@ -3,10 +3,13 @@ const { Duo } = require('../models');
 const Paginator = require('../helper/paginator');
 
 module.exports.createDuo = (req, res) => {
-  req.checkBody('nominalPertama', 'Harga Pertama required.').notEmpty().isInt();
-  req.checkBody('nominalKedua', 'Harga Kedua required.').notEmpty().isInt();
-  req.checkBody('biayaAdmin', 'Biaya Admin required.').notEmpty().isInt();
-  req.checkBody('lamaHari', 'Lama Hari required.').notEmpty().isInt();
+  req
+    .checkBody('nominalPertama', 'Nominal Lawan harus diisi.')
+    .notEmpty()
+    .isInt();
+  req.checkBody('nominalKedua', 'Nominal Kita harus diisi.').notEmpty().isInt();
+  req.checkBody('biayaAdmin', 'Biaya Admin harus diisi.').notEmpty().isInt();
+  req.checkBody('lamaHari', 'Lama Hari harus diisi.').notEmpty().isInt();
   const errors = req.validationErrors();
   if (errors) {
     return res.status(422).json({ status: false, message: errors[0].msg });
@@ -53,7 +56,7 @@ module.exports.createDuo = (req, res) => {
 module.exports.startDuo = async (req, res) => {
   const { id } = req.params;
 
-  req.checkBody('tanggalMulai', 'Tanggal Mulai required.').notEmpty();
+  req.checkBody('tanggalMulai', 'Tanggal Mulai harus diisi.').notEmpty();
   const errors = req.validationErrors();
   if (errors) {
     return res.status(422).json({ status: false, message: errors[0].msg });

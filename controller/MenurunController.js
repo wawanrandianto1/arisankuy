@@ -5,12 +5,12 @@ const Paginator = require('../helper/paginator');
 module.exports.createMenurun = (req, res) => {
   const { username } = req.user;
 
-  req.checkBody('nominal', 'Harga required.').notEmpty().isInt();
-  req.checkBody('total', 'Total required.').notEmpty().isInt();
-  req.checkBody('lamaHari', 'Lama Hari required.').notEmpty().isInt();
-  req.checkBody('urutan', 'Urutan required.').notEmpty().isInt();
-  req.checkBody('orang', 'Jumlah Orang required.').notEmpty().isInt();
-  req.checkBody('biayaAdmin', 'Biaya Admin required.').notEmpty().isInt();
+  req.checkBody('nominal', 'Harga harus diisi.').notEmpty().isInt();
+  req.checkBody('total', 'Total harus diisi.').notEmpty().isInt();
+  req.checkBody('lamaHari', 'Lama Hari harus diisi.').notEmpty().isInt();
+  req.checkBody('urutan', 'Urutan harus diisi.').notEmpty().isInt();
+  req.checkBody('orang', 'Jumlah Orang harus diisi.').notEmpty().isInt();
+  req.checkBody('biayaAdmin', 'Biaya Admin harus diisi.').notEmpty().isInt();
   const errors = req.validationErrors();
   if (errors) {
     return res.status(422).json({ status: false, message: errors[0].msg });
@@ -49,7 +49,7 @@ module.exports.startMenurun = async (req, res) => {
   const { id } = req.params;
   const { username } = req.user;
 
-  req.checkBody('tanggalMulai', 'Tanggal Mulai required.').notEmpty();
+  req.checkBody('tanggalMulai', 'Tanggal Mulai harus diisi.').notEmpty();
   const errors = req.validationErrors();
   if (errors) {
     return res.status(422).json({ status: false, message: errors[0].msg });
@@ -168,9 +168,7 @@ module.exports.listMenurun = (req, res) => {
       moment(startDate, 'DD-MM-YYYY', true).isValid() === false ||
       moment(endDate, 'DD-MM-YYYY', true).isValid() === false
     ) {
-      return res
-        .status(422)
-        .json({ status: false, message: 'Not a valid date' });
+      return res.status(422).json({ status: false, message: 'Tanggal salah.' });
     }
 
     Object.assign(where, {
