@@ -159,12 +159,12 @@ module.exports.listMenurun = (req, res) => {
   // nominal range
   if (firstNominal) {
     Object.assign(where, {
-      total: { [Op.gte]: firstNominal },
+      total: { [Op.gte]: parseInt(firstNominal, 10) },
     });
   }
   if (secondNominal) {
     Object.assign(where, {
-      total: { [Op.lte]: secondNominal },
+      total: { [Op.lte]: parseInt(secondNominal, 10) },
     });
   }
 
