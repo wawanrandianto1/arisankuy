@@ -1,4 +1,4 @@
-const { User, UserDevice, Duo, Menurun, MenurunItem } = require('../models');
+const { Duo, Menurun, MenurunItem } = require('../models');
 
 module.exports.dashboard = async (req, res) => {
   const { username } = req.user;

@@ -1,5 +1,5 @@
 const moment = require('moment');
-const { Op } = require('Sequelize');
+const { Op } = require('sequelize');
 const { Menurun, MenurunItem, sequelize } = require('../models');
 const Paginator = require('../helper/paginator');
 
