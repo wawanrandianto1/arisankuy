@@ -153,21 +153,62 @@ module.exports.listMenurun = (req, res) => {
   }
 
   let { status } = req.query;
-  const { startDate, endDate, firstNominal, secondNominal } = req.query;
+  const {
+    firstNominal = 0,
+    secondNominal = 100000000,
+    startDate,
+    endDate,
+  } = req.query;
   const where = {};
 
   // nominal range
-  if (firstNominal) {
-    Object.assign(where, {
-      total: { [Op.gte]: parseInt(firstNominal, 10) },
-    });
+  Object.assign(where, {
+    total: {
+      [Op.between]: [parseInt(firstNominal, 10), parseInt(secondNominal, 10)],
+    },
+  });
+
+  // date range check first
+  if (startDate) {
+    if (moment(startDate, 'DD-MM-YYYY', true).isValid() === false) {
+      return res
+        .status(422)
+        .json({ status: false, message: 'Tanggal start salah.' });
+    }
   }
-  if (secondNominal) {
+  if (endDate) {
+    if (moment(endDate, 'DD-MM-YYYY', true).isValid() === false) {
+      return res
+        .status(422)
+        .json({ status: false, message: 'Tanggal end salah.' });
+    }
+  }
+
+  // date range
+  if (startDate && endDate) {
     Object.assign(where, {
-      total: { [Op.lte]: parseInt(secondNominal, 10) },
+      tanggalMulai: {
+        [Op.between]: [
+          moment(startDate, 'DD-MM-YYYY').toDate(),
+          moment(endDate, 'DD-MM-YYYY').toDate(),
+        ],
+      },
+    });
+  } else if (startDate && !endDate) {
+    Object.assign(where, {
+      tanggalMulai: {
+        [Op.gt]: moment(startDate, 'DD-MM-YYYY').toDate(),
+      },
+    });
+  } else if (endDate && !startDate) {
+    Object.assign(where, {
+      tanggalMulai: {
+        [Op.lt]: moment(endDate, 'DD-MM-YYYY').toDate(),
+      },
     });
   }
 
+  // status
   if (status) {
     if (['pending', 'start', 'end'].indexOf(status) < 0) {
       status = 'pending';
@@ -177,34 +218,7 @@ module.exports.listMenurun = (req, res) => {
     });
   }
 
-  // date range
-  if (startDate) {
-    if (moment(startDate, 'DD-MM-YYYY', true).isValid() === false) {
-      return res
-        .status(422)
-        .json({ status: false, message: 'Tanggal start salah.' });
-    }
-    Object.assign(where, {
-      tanggalMulai: {
-        [Op.gt]: moment(startDate, 'DD-MM-YYYY').toDate(),
-      },
-    });
-  }
-
-  if (endDate) {
-    if (moment(endDate, 'DD-MM-YYYY', true).isValid() === false) {
-      return res
-        .status(422)
-        .json({ status: false, message: 'Tanggal end salah.' });
-    }
-    Object.assign(where, {
-      tanggalMulai: {
-        [Op.lt]: moment(endDate, 'DD-MM-YYYY').toDate(),
-      },
-    });
-  }
-
-  return Menurun.findAndCountAll({
+  return Menurun.findAll({
     include: [
       {
         model: MenurunItem,
@@ -220,10 +234,13 @@ module.exports.listMenurun = (req, res) => {
     offset,
     order: [[by, sort]],
   })
-    .then((result) => {
-      const count = result.count;
+    .then(async (result) => {
+      const count = await Menurun.findAll({
+        attributes: ['id'],
+        where,
+      });
       const data = result.rows;
-      paginator.setCount(count);
+      paginator.setCount(count.length);
       paginator.setData(data);
       return res.status(200).json({
         status: true,

@@ -113,41 +113,53 @@ module.exports.listDuo = (req, res) => {
   }
 
   let { status } = req.query;
-  const { firstNominal, secondNominal, startDate, endDate } = req.query;
+  const {
+    firstNominal = 0,
+    secondNominal = 100000000,
+    startDate,
+    endDate,
+  } = req.query;
   const where = {};
 
-  // nominal range
-  if (firstNominal) {
-    Object.assign(where, {
-      total: { [Op.gte]: parseInt(firstNominal, 10) },
-    });
-  }
-  if (secondNominal) {
-    Object.assign(where, {
-      total: { [Op.lte]: parseInt(secondNominal, 10) },
-    });
-  }
+  Object.assign(where, {
+    total: {
+      [Op.between]: [parseInt(firstNominal, 10), parseInt(secondNominal, 10)],
+    },
+  });
 
-  // date range
+  // date range check first
   if (startDate) {
     if (moment(startDate, 'DD-MM-YYYY', true).isValid() === false) {
       return res
         .status(422)
         .json({ status: false, message: 'Tanggal start salah.' });
     }
-    Object.assign(where, {
-      tanggalMulai: {
-        [Op.gt]: moment(startDate, 'DD-MM-YYYY').toDate(),
-      },
-    });
   }
-
   if (endDate) {
     if (moment(endDate, 'DD-MM-YYYY', true).isValid() === false) {
       return res
         .status(422)
         .json({ status: false, message: 'Tanggal end salah.' });
     }
+  }
+
+  // date range
+  if (startDate && endDate) {
+    Object.assign(where, {
+      tanggalMulai: {
+        [Op.between]: [
+          moment(startDate, 'DD-MM-YYYY').toDate(),
+          moment(endDate, 'DD-MM-YYYY').toDate(),
+        ],
+      },
+    });
+  } else if (startDate && !endDate) {
+    Object.assign(where, {
+      tanggalMulai: {
+        [Op.gt]: moment(startDate, 'DD-MM-YYYY').toDate(),
+      },
+    });
+  } else if (endDate && !startDate) {
     Object.assign(where, {
       tanggalMulai: {
         [Op.lt]: moment(endDate, 'DD-MM-YYYY').toDate(),
@@ -155,6 +167,7 @@ module.exports.listDuo = (req, res) => {
     });
   }
 
+  // status
   if (status) {
     if (['pending', 'start', 'end'].indexOf(status) < 0) {
       status = 'pending';
@@ -164,17 +177,20 @@ module.exports.listDuo = (req, res) => {
     });
   }
 
-  return Duo.findAndCountAll({
+  return Duo.findAll({
     attributes: { exclude: ['updatedAt'] },
     where,
     limit,
     offset,
     order: [[by, sort]],
   })
-    .then((result) => {
-      const count = result.count;
-      const data = result.rows;
-      paginator.setCount(count);
+    .then(async (result) => {
+      const count = await Duo.findAll({
+        attributes: ['id'],
+        where,
+      });
+      const data = result;
+      paginator.setCount(count.length);
       paginator.setData(data);
       return res.status(200).json({
         status: true,
