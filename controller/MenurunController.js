@@ -1,4 +1,5 @@
 const moment = require('moment');
+const { Op } = require('Sequelize');
 const { Menurun, MenurunItem, sequelize } = require('../models');
 const Paginator = require('../helper/paginator');
 
@@ -144,7 +145,7 @@ module.exports.listMenurun = (req, res) => {
   const paginator = new Paginator(page, limit);
   const offset = paginator.getOffset();
 
-  if (['tanggalMulai', 'total', 'nominal'].indexOf(by) < 0) {
+  if (['tanggalMulai', 'total'].indexOf(by) < 0) {
     by = 'tanggalMulai';
   }
   if (['asc', 'desc'].indexOf(sort) < 0) {
@@ -152,8 +153,21 @@ module.exports.listMenurun = (req, res) => {
   }
 
   let { status } = req.query;
-  const { startDate, endDate } = req.query;
+  const { startDate, endDate, firstNominal, secondNominal } = req.query;
   const where = {};
+
+  // nominal range
+  if (firstNominal) {
+    Object.assign(where, {
+      total: { [Op.gte]: firstNominal },
+    });
+  }
+  if (secondNominal) {
+    Object.assign(where, {
+      total: { [Op.lte]: secondNominal },
+    });
+  }
+
   if (status) {
     if (['pending', 'start', 'end'].indexOf(status) < 0) {
       status = 'pending';
@@ -163,20 +177,29 @@ module.exports.listMenurun = (req, res) => {
     });
   }
 
-  if (startDate && endDate) {
-    if (
-      moment(startDate, 'DD-MM-YYYY', true).isValid() === false ||
-      moment(endDate, 'DD-MM-YYYY', true).isValid() === false
-    ) {
-      return res.status(422).json({ status: false, message: 'Tanggal salah.' });
+  // date range
+  if (startDate) {
+    if (moment(startDate, 'DD-MM-YYYY', true).isValid() === false) {
+      return res
+        .status(422)
+        .json({ status: false, message: 'Tanggal start salah.' });
     }
-
     Object.assign(where, {
       tanggalMulai: {
-        [Op.between]: [
-          moment(startDate, 'DD-MM-YYYY').startOf('day').toDate(),
-          moment(endDate, 'DD-MM-YYYY').endOf('day').toDate(),
-        ],
+        [Op.gt]: moment(startDate, 'DD-MM-YYYY').toDate(),
+      },
+    });
+  }
+
+  if (endDate) {
+    if (moment(endDate, 'DD-MM-YYYY', true).isValid() === false) {
+      return res
+        .status(422)
+        .json({ status: false, message: 'Tanggal end salah.' });
+    }
+    Object.assign(where, {
+      tanggalMulai: {
+        [Op.lt]: moment(endDate, 'DD-MM-YYYY').toDate(),
       },
     });
   }

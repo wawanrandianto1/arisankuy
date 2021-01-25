@@ -1,4 +1,5 @@
 const moment = require('moment');
+const { Op } = require('Sequelize');
 const { Duo } = require('../models');
 const Paginator = require('../helper/paginator');
 
@@ -112,7 +113,48 @@ module.exports.listDuo = (req, res) => {
   }
 
   let { status } = req.query;
+  const { firstNominal, secondNominal, startDate, endDate } = req.query;
   const where = {};
+
+  // nominal range
+  if (firstNominal) {
+    Object.assign(where, {
+      total: { [Op.gte]: firstNominal },
+    });
+  }
+  if (secondNominal) {
+    Object.assign(where, {
+      total: { [Op.lte]: secondNominal },
+    });
+  }
+
+  // date range
+  if (startDate) {
+    if (moment(startDate, 'DD-MM-YYYY', true).isValid() === false) {
+      return res
+        .status(422)
+        .json({ status: false, message: 'Tanggal start salah.' });
+    }
+    Object.assign(where, {
+      tanggalMulai: {
+        [Op.gt]: moment(startDate, 'DD-MM-YYYY').toDate(),
+      },
+    });
+  }
+
+  if (endDate) {
+    if (moment(endDate, 'DD-MM-YYYY', true).isValid() === false) {
+      return res
+        .status(422)
+        .json({ status: false, message: 'Tanggal end salah.' });
+    }
+    Object.assign(where, {
+      tanggalMulai: {
+        [Op.lt]: moment(endDate, 'DD-MM-YYYY').toDate(),
+      },
+    });
+  }
+
   if (status) {
     if (['pending', 'start', 'end'].indexOf(status) < 0) {
       status = 'pending';
