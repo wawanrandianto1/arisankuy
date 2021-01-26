@@ -5,18 +5,6 @@ const Paginator = require('../helper/paginator');
 
 module.exports.createMenurun = (req, res) => {
   const { username } = req.user;
-
-  req.checkBody('nominal', 'Harga harus diisi.').notEmpty().isInt();
-  req.checkBody('total', 'Total harus diisi.').notEmpty().isInt();
-  req.checkBody('lamaHari', 'Lama Hari harus diisi.').notEmpty().isInt();
-  req.checkBody('urutan', 'Urutan harus diisi.').notEmpty().isInt();
-  req.checkBody('orang', 'Jumlah Orang harus diisi.').notEmpty().isInt();
-  req.checkBody('biayaAdmin', 'Biaya Admin harus diisi.').notEmpty().isInt();
-  const errors = req.validationErrors();
-  if (errors) {
-    return res.status(422).json({ status: false, message: errors[0].msg });
-  }
-
   const {
     nominal,
     total,
@@ -25,7 +13,96 @@ module.exports.createMenurun = (req, res) => {
     orang,
     biayaAdmin,
     catatan,
+    status = 'pending',
+    tanggalMulai,
   } = req.body;
+
+  req.checkBody('nominal', 'Harga harus diisi.').notEmpty().isInt();
+  req.checkBody('total', 'Total harus diisi.').notEmpty().isInt();
+  req.checkBody('lamaHari', 'Lama Hari harus diisi.').notEmpty().isInt();
+  req.checkBody('urutan', 'Urutan harus diisi.').notEmpty().isInt();
+  req.checkBody('orang', 'Jumlah Orang harus diisi.').notEmpty().isInt();
+  req.checkBody('biayaAdmin', 'Biaya Admin harus diisi.').notEmpty().isInt();
+  if (status === 'start') {
+    req.checkBody('tanggalMulai', 'Tanggal Mulai harus diisi.').notEmpty();
+  }
+  const errors = req.validationErrors();
+  if (errors) {
+    return res.status(422).json({ status: false, message: errors[0].msg });
+  }
+
+  if (['pending', 'start'].indexOf(status) < 0) {
+    return res.status(422).json({ status: false, message: 'Status salah.' });
+  }
+
+  if (status === 'start') {
+    let tanggalGet = null;
+    const arrMenurunItems = [];
+    for (let i = 1; i <= parseInt(orang, 10); i++) {
+      let lamaWaktu = i * parseInt(lamaHari, 10);
+      let prefixTanggal = moment(tanggalMulai, 'DD-MM-YYYY').add(
+        lamaWaktu,
+        'days'
+      );
+
+      let boolGet = false;
+      if (i === parseInt(urutan, 10)) {
+        tanggalGet = prefixTanggal.toDate();
+        boolGet = true;
+      }
+
+      if (i === 1) {
+        arrMenurunItems.push({
+          // menurunId: id,
+          urutan: i,
+          tanggal: prefixTanggal.toDate(),
+          hargaBayar: parseInt(biayaAdmin, 10) + parseInt(nominal, 10),
+          status: 'start',
+          username,
+          getArisan: boolGet,
+        });
+      } else {
+        arrMenurunItems.push({
+          // menurunId: id,
+          urutan: i,
+          tanggal: prefixTanggal.toDate(),
+          hargaBayar: parseInt(nominal, 10),
+          status: 'pending',
+          username,
+          getArisan: boolGet,
+        });
+      }
+    }
+
+    return Menurun.create({
+      total: parseInt(total, 10),
+      nominal: parseInt(nominal, 10),
+      lamaHari: parseInt(lamaHari, 10),
+      urutan: parseInt(urutan, 10),
+      orang: parseInt(orang, 10),
+      biayaAdmin: parseInt(biayaAdmin, 10),
+      status,
+      catatan,
+      username,
+      tanggalMulai: moment(tanggalMulai, 'DD-MM-YYYY').toDate(),
+      tanggalGet,
+    })
+      .then(async (data) => {
+        if (arrMenurunItems.length) {
+          const newArray = arrMenurunItems.map((el) => {
+            return { ...el, menurunId: data.id };
+          });
+          await MenurunItem.bulkCreate(newArray);
+        }
+
+        return res
+          .status(200)
+          .json({ status: true, message: 'Sukses buat menurun.' });
+      })
+      .catch((err) =>
+        res.status(422).json({ status: false, message: err.message })
+      );
+  }
 
   return Menurun.create({
     total: parseInt(total, 10),
@@ -34,7 +111,7 @@ module.exports.createMenurun = (req, res) => {
     urutan: parseInt(urutan, 10),
     orang: parseInt(orang, 10),
     biayaAdmin: parseInt(biayaAdmin, 10),
-    status: 'pending',
+    status,
     catatan,
     username,
   })

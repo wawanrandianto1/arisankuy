@@ -7,14 +7,14 @@ module.exports = {
     database: process.env.DB_DATABASE,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: 'postgres',
+    dialect: 'mysql',
     dialectOptions: {
-      // timezone: '+07:00',
-      // decimalNumbers: true,
-      ssl: {
-        require: true,
-        rejectUnauthorized: false, // <<<<<<< YOU NEED THIS
-      },
+      timezone: '+07:00',
+      decimalNumbers: true,
+      // ssl: {
+      //   require: true,
+      //   rejectUnauthorized: false, // <<<<<<< YOU NEED THIS
+      // },
     },
     connectionTimeout: 0,
   },
@@ -24,14 +24,14 @@ module.exports = {
     database: process.env.DB_DATABASE,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: 'postgres',
+    dialect: 'mysql',
     dialectOptions: {
-      //   timezone: '+07:00',
-      //   decimalNumbers: true,
-      ssl: {
-        require: true,
-        rejectUnauthorized: false, // <<<<<<< YOU NEED THIS
-      },
+      timezone: '+07:00',
+      decimalNumbers: true,
+      // ssl: {
+      //   require: true,
+      //   rejectUnauthorized: false, // <<<<<<< YOU NEED THIS
+      // },
     },
     connectionTimeout: 0,
   },

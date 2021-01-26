@@ -4,18 +4,6 @@ const { Duo } = require('../models');
 const Paginator = require('../helper/paginator');
 
 module.exports.createDuo = (req, res) => {
-  req
-    .checkBody('nominalPertama', 'Nominal Lawan harus diisi.')
-    .notEmpty()
-    .isInt();
-  req.checkBody('nominalKedua', 'Nominal Kita harus diisi.').notEmpty().isInt();
-  req.checkBody('biayaAdmin', 'Biaya Admin harus diisi.').notEmpty().isInt();
-  req.checkBody('lamaHari', 'Lama Hari harus diisi.').notEmpty().isInt();
-  const errors = req.validationErrors();
-  if (errors) {
-    return res.status(422).json({ status: false, message: errors[0].msg });
-  }
-
   const {
     nominalPertama, // nominal lawan
     nominalKedua, // nominal kita
@@ -23,8 +11,29 @@ module.exports.createDuo = (req, res) => {
     lamaHari,
     namaPasangan,
     catatan,
+    tanggalMulai,
+    status = 'pending',
   } = req.body;
   const { username } = req.user;
+
+  req
+    .checkBody('nominalPertama', 'Nominal Lawan harus diisi.')
+    .notEmpty()
+    .isInt();
+  req.checkBody('nominalKedua', 'Nominal Kita harus diisi.').notEmpty().isInt();
+  req.checkBody('biayaAdmin', 'Biaya Admin harus diisi.').notEmpty().isInt();
+  req.checkBody('lamaHari', 'Lama Hari harus diisi.').notEmpty().isInt();
+  if (status === 'start') {
+    req.checkBody('tanggalMulai', 'Tanggal Mulai harus diisi.').notEmpty();
+  }
+  const errors = req.validationErrors();
+  if (errors) {
+    return res.status(422).json({ status: false, message: errors[0].msg });
+  }
+
+  if (['pending', 'start'].indexOf(status) < 0) {
+    return res.status(422).json({ status: false, message: 'Status salah.' });
+  }
 
   const selisih = parseInt(nominalPertama, 10) - parseInt(nominalKedua, 10);
   let laba = 0;
@@ -32,6 +41,28 @@ module.exports.createDuo = (req, res) => {
     laba = selisih;
   } else {
     laba = selisih - parseInt(biayaAdmin, 10);
+  }
+
+  if (status === 'start') {
+    return Duo.create({
+      nominalPertama: parseInt(nominalPertama, 10),
+      nominalKedua: parseInt(nominalKedua, 10),
+      total: parseInt(nominalPertama, 10) + parseInt(nominalKedua, 10),
+      laba,
+      biayaAdmin: parseInt(biayaAdmin, 10),
+      lamaHari: parseInt(lamaHari, 10),
+      namaPasangan,
+      tanggalMulai: moment(tanggalMulai, 'DD-MM-YYYY').toDate(),
+      catatan,
+      status,
+      username,
+    })
+      .then(() =>
+        res.status(200).json({ status: true, message: 'Sukses buat duos.' })
+      )
+      .catch((err) =>
+        res.status(422).json({ status: false, message: err.message })
+      );
   }
 
   return Duo.create({
@@ -43,7 +74,7 @@ module.exports.createDuo = (req, res) => {
     lamaHari: parseInt(lamaHari, 10),
     namaPasangan,
     catatan,
-    status: 'pending',
+    status,
     username,
   })
     .then(() =>
